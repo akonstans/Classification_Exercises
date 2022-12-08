@@ -1,5 +1,6 @@
 import os
 import env
+import pandas as pd
 
 def clean(currency):
     '''Takes a currency considered an obj or str and turns it into a clean float
@@ -23,11 +24,11 @@ def get_db_url(db, env_file=os.path.exists('env.py')):
     else:
         return 'You need a username and password'
 
-def get_connection(filename, get_con_func, variable):
+def connect(db_name, filename, query):
     if os.path.isfile(filename):
         return pd.read_csv(filename)
     else:
-        url = get_connection(filename)
+        url = get_db_url(db_name)
         variable = pd.read_sql(query, url)
         variable.to_csv(filename)
         return variable

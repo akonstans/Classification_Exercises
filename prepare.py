@@ -1,5 +1,89 @@
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+from env import get_connection
+import os
+from pydataset import data
+
+def get_titanic(get_con_func):
+    
+    if os.path.isfile('titanic.csv'):
+        
+        return pd.read_csv('titanic.csv')
+    
+    else:
+        url = get_con_func('titanic_db')
+        query = '''SELECT * FROM passengers'''
+        df = pd.read_sql(query, url)
+        df.to_csv('titanic.csv')
+        return df
+pd.read_excel('titanic.xlsx')
+
+pd.read_clipboard()
+
+# ## Exercises
+
+db_iris = data('iris')
+db_iris = pd.DataFrame(db_iris)
+db_iris.head(3)
+
+db_iris.shape
+
+db_iris.columns
+
+db_iris.info()
+
+db_iris.describe()
+
+sheet_url = 'https://docs.google.com/spreadsheets/d/1Uhtml8KY19LILuZsrDtlsHHDC9wuDGUSe8LTEwvdI5g/edit#gid=341089357'
+csv_export_url = sheet_url.replace('/edit#gid=', '/export?format=csv&gid=')
+df_google = pd.read_csv(csv_export_url)
+df_google.head(3)
+
+df_google.shape
+
+df_google.columns
+
+df_google.info()
+
+df_google.describe()
+
+df_google['Sex'].unique()
+
+df_google['Embarked'].unique()
+
+df_excel = pd.read_excel('titanic.xlsx')
+df_excel.head(3)
+
+df_excel_sample = df_excel.head(100)
+df_excel.shape
+
+df_excel_sample.columns[:5]
+
+df_excel_sample.info()
+df_excel_sample.select_dtypes(include=object).columns
+
+df_excel_min_max = pd.DataFrame(columns=['max','min'])
+df_excel_min_max['max'] = df_excel.select_dtypes(exclude=object).max()
+df_excel_min_max['min'] = df_excel.select_dtypes(exclude=object).min()
+df_excel_min_max
+
+from acquire import get_titanic_data
+
+get_titanic_data(get_connection).head()
+
+from acquire import get_iris_data
+
+get_iris_data(get_connection).head()
+
+from acquire import get_telco_data
+
+get_telco_data(get_connection).head()
+
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
@@ -28,7 +112,6 @@ for col in numerical_cols:
     plt.hist(df[col])
     plt.title(col)
     plt.show()
-
 categorical_cols = df.select_dtypes(include='object').columns.to_list()
 
 for col in categorical_cols:
@@ -57,7 +140,6 @@ dummies = pd.get_dummies(df[['sex', 'embark_town']], drop_first=[True])
 df = pd.concat([df, dummies], axis=1)
 
 df
-
 def clean_titanic(df):
     df.drop(columns=['class','embarked', 'passenger_id', 'deck', 'age', 'Unnamed: 0'], inplace=True)
     
@@ -115,7 +197,6 @@ train['embark_town'].isna().sum()
 train['embark_town'] = imputer.transform(train[['embark_town']])
 
 train['embark_town'].isna().sum()
-## Exercises
 
 # Use the function defined in acquire.py to load the iris data.
 # 
@@ -202,6 +283,7 @@ telco_dummies = pd.get_dummies(telco[['gender', 'partner', 'dependents',
                                       'contract_type', 'payment_type']], drop_first=True)
 
 telco_dummies
+
 telco = pd.concat([telco, telco_dummies], axis=1)
 telco.head()
 
@@ -221,8 +303,7 @@ def prep_telco(telco):
     telco = pd.concat([telco, telco_dummies], axis=1)
     
     return telco
-
-# Write a function to split your data into train, test and validate datasets. Add this function to prepare.py.
+​# Write a function to split your data into train, test and validate datasets. Add this function to prepare.py.
 # 
 # Run the function in your notebook on the Iris dataset, returning 3 datasets, train_iris, validate_iris and test_iris.
 # 
